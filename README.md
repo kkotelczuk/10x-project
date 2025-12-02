@@ -1,94 +1,116 @@
-# 10x Astro Starter
+# HealthyMeal
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+**HealthyMeal** is an AI-powered MVP web application designed to solve the problem of adapting cooking recipes to individual dietary needs. It allows users to input any recipe and uses a Large Language Model (LLM) to modify ingredients and instructions based on the user's dietary profile (e.g., allergies, Keto/Vegan diets, or specific product dislikes).
+
+## Table of Contents
+
+- [Project Description](#project-description)
+- [Tech Stack](#tech-stack)
+- [Getting Started Locally](#getting-started-locally)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
+
+## Project Description
+
+Adapting online recipes to specific health requirements is often time-consuming and risky, especially when dealing with severe allergies. HealthyMeal streamlines this process by serving as an intelligent culinary assistant.
+
+### Key Features
+
+- **Personalized Onboarding**: Users define their main diet (e.g., Vegetarian, Keto), strict allergens (e.g., Nuts, Lactose), and disliked products.
+- **AI Recipe Modification**: Users can paste text from any recipe (up to 1000 chars), and the system validates, modifies, and restructures it to be safe and compliant with their profile.
+- **Dashboard & Library**: A centralized place to manage, search, and filter saved recipes.
+- **Security & Limits**: Includes authentication (Email/Google), daily modification limits, and medical disclaimers.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+This project is built using modern web technologies, focusing on performance and type safety.
 
-## Prerequisites
+| Category           | Technology         | Description                                                            |
+| ------------------ | ------------------ | ---------------------------------------------------------------------- |
+| **Core Framework** | **Astro 5**        | Utilizing Server Islands and Hybrid rendering for optimal performance. |
+| **Interactive UI** | **React 19**       | Used for complex interactive components (Dashboard, Wizards).          |
+| **Language**       | **TypeScript 5**   | Strict typing enabled for reliability.                                 |
+| **Styling**        | **Tailwind CSS 4** | Next-gen CSS engine with native configuration.                         |
+| **Components**     | **Shadcn/ui**      | Accessible component primitives with Lucide React icons.               |
+| **Backend / BaaS** | **Supabase**       | PostgreSQL database, Authentication, and Row Level Security (RLS).     |
+| **AI Integration** | **OpenRouter.ai**  | Server-side LLM integration via Astro Endpoints.                       |
+| **Infrastructure** | **Docker**         | Containerized deployment targeting DigitalOcean.                       |
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+## Getting Started Locally
 
-## Getting Started
+Follow these instructions to get a copy of the project up and running on your local machine.
 
-1. Clone the repository:
+### Prerequisites
 
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
+- **Node.js**: Version `22.14.0` (as specified in `.nvmrc`).
+- **npm** or **pnpm**.
 
-2. Install dependencies:
+### Installation
 
-```bash
-npm install
-```
+1. **Clone this the repository**
 
-3. Run the development server:
+2. **Install dependencies**
 
-```bash
-npm run dev
-```
+   ```bash
+   npm install
+   ```
 
-4. Build for production:
+3. **Environment Setup**
+   Create a `.env` file in the root directory. You will need credentials for Supabase and OpenRouter.
 
-```bash
-npm run build
-```
+   ```bash
+   # Example .env structure
+   PUBLIC_SUPABASE_URL=your_supabase_url
+   PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   OPENROUTER_API_KEY=your_openrouter_api_key
+   ```
+
+4. **Run the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+   The app should now be running on `http://localhost:3000`.
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+These scripts are defined in `package.json` for development and maintenance.
 
-## Project Structure
+| Script     | Command              | Description                                   |
+| ---------- | -------------------- | --------------------------------------------- |
+| `dev`      | `astro dev`          | Starts the local development server.          |
+| `build`    | `astro build`        | Builds the production-ready site.             |
+| `preview`  | `astro preview`      | Previews the built application locally.       |
+| `lint`     | `eslint .`           | Runs ESLint to check for code quality issues. |
+| `lint:fix` | `eslint . --fix`     | Automatically fixes fixable linting errors.   |
+| `format`   | `prettier --write .` | Formats code using Prettier.                  |
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+## Project Scope
 
-## AI Development Support
+### In Scope (MVP)
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+- **Responsive Web App (PWA/RWD)**: Optimized for mobile and desktop.
+- **Language**: Polish language interface and content generation.
+- **Recipe Management**: Create (via AI), Read, Update (Re-generate), Delete.
+- **Logic**: Intelligent substitution of ingredients while maintaining culinary logic.
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+### Out of Scope
 
-### Cursor IDE
+- Scraping recipes directly from URLs.
+- Image recognition for recipes.
+- Generating shopping lists.
+- Native mobile applications (iOS/Android).
+- Social sharing features.
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+## Project Status
 
-### GitHub Copilot
+🚧 **MVP Development**
 
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+This project is currently in the Minimum Viable Product (MVP) phase. Core functionalities regarding authentication and AI recipe generation are being implemented.
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the LICENSE file for details.
