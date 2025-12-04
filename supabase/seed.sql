@@ -1,0 +1,115 @@
+
+INSERT INTO public.diets (id, name, allowed_foods, forbidden_foods, macros)
+VALUES
+(
+  'keto',
+  'Keto',
+  ARRAY[
+    'pełnotłuste nabiał',
+    'mięso, ryby, jaja',
+    'awokado',
+    'niskowęglowodanowe warzywa (brokuły, szpinak, sałata)',
+    'oleje (oliwa z oliwek, kokosowy)',
+    'orzechy (makadamia, orzechy włoskie, migdały)',
+    'nasiona (chia, lniane)',
+    'czekolada gorzka (min. 85% kakao)',
+    'kakao, kawa, herbata bez cukru',
+    'ocet jabłkowy, musztarda, sosy bez cukru'
+  ],
+  ARRAY[
+    'pieczywo, makarony, ryż',
+    'słodycze, cukier',
+    'ziemniaki i inne warzywa skrobiowe',
+    'owoce tropikalne, suszone owoce',
+    'nabiał niskotłusty',
+    'przetworzone produkty z dodatkiem cukru lub skrobi'
+  ],
+  '{ "tłuszcz": "70-80%", "białko": "10-20%", "węglowodany": "5-10%", "ograniczenia kaloryczne": "brak sztywnego limitu, zaleca się 20-50g netto węglowodanów dziennie" }'::jsonb
+),
+(
+  'vege',
+  'Vege',
+  ARRAY[
+    'warzywa',
+    'owoce',
+    'ziarna (ryż, kasze, pszenica)',
+    'nabiał',
+    'jaja',
+    'orzechy, nasiona',
+    'strączki (soczewica, fasola, groch)',
+    'oleje roślinne'
+  ],
+  ARRAY[
+    'mięso, ryby, drobiu',
+    'produkty pochodzenia zwierzęcego (oprócz nabiału i jaj)'
+  ],
+  '{ "tłuszcz": "20-30%", "białko": "25-30%", "węglowodany": "45-55%", "ograniczenia kaloryczne": "brak sztywnego limitu, zaleca się zbilansowaną dietę" }'::jsonb
+),
+(
+  'vegan',
+  'Vegan',
+  ARRAY[
+    'warzywa',
+    'owoce',
+    'ziarna (ryż, kasze, pszenica)',
+    'orzechy, nasiona',
+    'strączki (soczewica, fasola, groch)',
+    'oleje roślinne',
+    'mleka roślinne (bez cukru)'
+  ],
+  ARRAY[
+    'mięso, ryby, drobiu',
+    'nabiał',
+    'jaja',
+    'produkty pochodzenia zwierzęcego'
+  ],
+  '{ "tłuszcz": "20-30%", "białko": "25-30%", "węglowodany": "45-55%", "ograniczenia kaloryczne": "brak sztywnego limitu, zaleca się zbilansowaną dietę" }'::jsonb
+),
+(
+  'low-carb',
+  'Low-carb',
+  ARRAY[
+    'warzywa niskowęglowodanowe (brokuły, szpinak, sałata)',
+    'mięso, ryby, jaja',
+    'pełnotłusty nabiał',
+    'awokado',
+    'oleje roślinne',
+    'orzechy, nasiona',
+    'niskowęglowodanowe owoce (maliny, jagody)'
+  ],
+  ARRAY[
+    'pieczywo, makarony, ryż',
+    'słodycze, cukier',
+    'ziemniaki i inne warzywa skrobiowe',
+    'owoce tropikalne, suszone owoce',
+    'przetworzone produkty z dodatkiem cukru lub skrobi'
+  ],
+  '{ "tłuszcz": "55-60%", "białko": "30-35%", "węglowodany": "5-10%", "ograniczenia kaloryczne": "brak sztywnego limitu, zaleca się 20-100g węglowodanów dziennie" }'::jsonb
+),
+(
+  'bezgluten',
+  'Bezgluten',
+  ARRAY[
+    'warzywa',
+    'owoce',
+    'mięso, ryby, jaja',
+    'nabiał',
+    'ziarna bezglutenowe (ryż, kukurydza, amarant, gryka, kwinoa, tef)',
+    'orzechy, nasiona',
+    'oleje roślinne',
+    'mleka roślinne'
+  ],
+  ARRAY[
+    'pszenica, żyto, jęczmień',
+    'pieczywo, makarony, ryż z dodatkiem pszenicy',
+    'malt, ekstrakt malty, aromat malty',
+    'przetworzone produkty z dodatkiem glutenu'
+  ],
+  '{ "tłuszcz": "20-30%", "białko": "15-20%", "węglowodany": "45-55%", "ograniczenia kaloryczne": "brak sztywnego limitu, zaleca się unikanie glutenu poniżej 10-30mg dziennie" }'::jsonb
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  allowed_foods = EXCLUDED.allowed_foods,
+  forbidden_foods = EXCLUDED.forbidden_foods,
+  macros = EXCLUDED.macros;
+
