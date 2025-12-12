@@ -1,0 +1,17 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
+import { DietService } from "@/lib/services/diet.service";
+import { AllergenService } from "@/lib/services/allergen.service";
+
+const dietService = new DietService(Astro.locals.supabase);
+const allergenService = new AllergenService(Astro.locals.supabase);
+
+const [diets, allergens] = await Promise.all([dietService.getAllDiets(), allergenService.getAllAllergens()]);
+---
+
+<Layout title="Welcome to 10xDiet">
+  <div class="container mx-auto py-10">
+    <OnboardingWizard client:load diets={diets} allergens={allergens} />
+  </div>
+</Layout>
