@@ -1,0 +1,8 @@
+---
+import AuthPageLayout from "@/components/auth/AuthPageLayout.astro";
+import { AuthCard } from "@/components/auth/AuthCard";
+---
+
+<AuthPageLayout title="Stwórz konto" subtitle="Załóż konto i generuj przepisy dopasowane do Twojej diety.">
+  <AuthCard client:load mode="register" />
+</AuthPageLayout>

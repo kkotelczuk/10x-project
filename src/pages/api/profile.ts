@@ -3,6 +3,7 @@ import { z } from "zod";
 import { ProfileService } from "@/lib/services/profile.service";
 import { DEFAULT_USER_ID } from "@/db/supabase.client";
 import type { UpsertProfileCommand } from "@/types";
+import { logger } from "@/lib/logger";
 
 export const prerender = false;
 
@@ -36,7 +37,7 @@ export const GET: APIRoute = async ({ locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in GET /api/profile:", error);
+    logger.error("Error in GET /api/profile:", error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -110,7 +111,7 @@ export const PUT: APIRoute = async ({ request, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in PUT /api/profile:", error);
+    logger.error("Error in PUT /api/profile:", error);
 
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
 

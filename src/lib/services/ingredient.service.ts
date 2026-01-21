@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@/db/supabase.client";
 import type { IngredientDTO } from "@/types";
+import { logger } from "@/lib/logger";
 
 export class IngredientService {
   constructor(private supabase: SupabaseClient) {}
@@ -27,7 +28,7 @@ export class IngredientService {
       .eq("is_visible", true);
 
     if (error) {
-      console.error("Error searching ingredients:", error);
+      logger.error("Error searching ingredients:", error);
       throw error;
     }
 

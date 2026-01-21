@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@/db/supabase.client";
 import type { DietDTO } from "../../types";
+import { logger } from "@/lib/logger";
 
 export class DietService {
   constructor(private readonly supabase: SupabaseClient) {}
@@ -13,7 +14,7 @@ export class DietService {
     const { data, error } = await this.supabase.from("diets").select("*");
 
     if (error) {
-      console.error("Error fetching diets:", error);
+      logger.error("Error fetching diets:", error);
       throw new Error("Failed to fetch diets");
     }
 

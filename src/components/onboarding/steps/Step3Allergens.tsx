@@ -1,6 +1,5 @@
 import React from "react";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import type { AllergenDTO } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +29,8 @@ export function Step3Allergens({ allergens, selectedAllergenIds, onUpdate }: Ste
         {allergens.map((allergen) => {
           const isSelected = selectedAllergenIds.includes(allergen.id);
           return (
-            <div
+            <button
+              type="button"
               key={allergen.id}
               onClick={() => toggleAllergen(allergen.id)}
               className={cn(
@@ -39,9 +39,10 @@ export function Step3Allergens({ allergens, selectedAllergenIds, onUpdate }: Ste
                   ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
                   : "bg-transparent text-foreground"
               )}
+              aria-pressed={isSelected}
             >
               {allergen.name}
-            </div>
+            </button>
           );
         })}
       </div>

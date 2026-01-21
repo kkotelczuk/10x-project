@@ -1,0 +1,43 @@
+---
+import type { RecipeInstructionJson } from "@/types";
+
+interface Props {
+  instructions: RecipeInstructionJson[];
+}
+
+const { instructions } = Astro.props;
+---
+
+<section aria-labelledby="instructions-title" class="rounded-xl border bg-card">
+  <details open class="group">
+    <summary
+      class="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 md:hidden"
+      aria-controls="instructions-content"
+    >
+      <h2 id="instructions-title" class="text-base font-medium">Instructions</h2>
+      <span class="text-sm text-muted-foreground group-open:hidden">Show</span>
+      <span class="text-sm text-muted-foreground hidden group-open:inline">Hide</span>
+    </summary>
+
+    <div id="instructions-content" class="px-4 pb-4 pt-2 md:pt-4">
+      <h2 class="hidden md:block text-base font-medium mb-3">Instructions</h2>
+
+      {
+        instructions.length === 0 ? (
+          <p class="text-sm text-muted-foreground">No instructions to display.</p>
+        ) : (
+          <ol class="space-y-3 list-decimal pl-5">
+            {instructions
+              .slice()
+              .sort((a, b) => (a.step ?? 0) - (b.step ?? 0))
+              .map((ins) => (
+                <li class="text-sm leading-relaxed">
+                  <span class="text-foreground">{ins.text}</span>
+                </li>
+              ))}
+          </ol>
+        )
+      }
+    </div>
+  </details>
+</section>

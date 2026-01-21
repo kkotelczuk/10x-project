@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { DietService } from "@/lib/services/diet.service";
+import { logger } from "@/lib/logger";
 
 export const prerender = false;
 
@@ -16,7 +17,7 @@ export const GET: APIRoute = async ({ locals }) => {
       },
     });
   } catch (error) {
-    console.error("Error in GET /rest/v1/diets:", error);
+    logger.error("Error in GET /rest/v1/diets:", error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
       headers: {

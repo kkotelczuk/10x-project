@@ -1,0 +1,8 @@
+---
+import AuthPageLayout from "@/components/auth/AuthPageLayout.astro";
+import { AuthCard } from "@/components/auth/AuthCard";
+---
+
+<AuthPageLayout title="Zaloguj się" subtitle="Wróć do swoich przepisów w kilka sekund.">
+  <AuthCard client:load mode="login" />
+</AuthPageLayout>

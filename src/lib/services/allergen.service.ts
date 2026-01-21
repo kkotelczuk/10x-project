@@ -19,4 +19,3 @@ export class AllergenService {
     return data || [];
   }
 }
-

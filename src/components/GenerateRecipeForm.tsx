@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { GenerateRecipeResponse } from "@/types";
+import { logger } from "@/lib/logger";
 
 interface GenerateRecipeFormProps {
   onSuccess?: (recipe: GenerateRecipeResponse["recipe"]) => void;
@@ -54,7 +55,7 @@ export const GenerateRecipeForm: React.FC<GenerateRecipeFormProps> = ({ onSucces
         onSuccess(successData.recipe);
       }
     } catch (err: unknown) {
-      console.error("Generation error:", err);
+      logger.error("Generation error:", err);
       const errorMessage = err instanceof Error ? err.message : "Wystąpił błąd podczas komunikacji z serwerem.";
       setError(errorMessage);
     } finally {

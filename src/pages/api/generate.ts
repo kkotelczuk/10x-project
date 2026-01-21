@@ -2,7 +2,8 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { RecipeService } from "@/lib/services/recipe.service";
 import { ProfileService } from "@/lib/services/profile.service";
-import { AIService } from "@/lib/services/ai.service";
+import { OpenRouterService, OpenRouterServiceError } from "@/lib/services/OpenRouterService";
+import { logger } from "@/lib/logger";
 import type { GenerateRecipeCommand, GenerateRecipeResponse } from "@/types";
 import type { Json } from "@/db/database.types";
 
@@ -14,11 +15,7 @@ const generateRecipeSchema = z.object({
 
 export const POST: APIRoute = async (context) => {
   const supabase = context.locals.supabase;
-
-  // 1. Authentication Check
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = context.locals.user;
 
   if (!user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -27,10 +24,12 @@ export const POST: APIRoute = async (context) => {
     });
   }
 
+  const userId = user.id;
+
   // Initialize Services
-  const recipeService = new RecipeService(supabase);
+  const openRouterService = new OpenRouterService({ logger });
+  const recipeService = new RecipeService(supabase, openRouterService);
   const profileService = new ProfileService(supabase);
-  const aiService = new AIService();
 
   try {
     // 2. Input Validation
@@ -48,18 +47,18 @@ export const POST: APIRoute = async (context) => {
 
     // 3. Check Daily Limit
     // This throws if limit reached
-    await recipeService.checkDailyLimit(user.id);
+    await recipeService.checkDailyLimit(userId);
 
     // 4. Fetch Profile for Personalization
-    const profile = await profileService.getProfile(user.id);
+    const profile = await profileService.getProfile(userId);
 
     // 5. Generate Recipe via AI
-    const generatedData = await aiService.generateRecipe(command.original_text, profile);
+    const generatedData = await recipeService.generateRecipe(command.original_text, profile);
 
     // 6. Save Recipe
     // Map GeneratedRecipeData to DbInsert<"recipes"> fields
     // Note: 'ingredients' and 'instructions' are JSON types in DB
-    const newRecipe = await recipeService.createGeneratedRecipe(user.id, {
+    const newRecipe = await recipeService.createGeneratedRecipe(userId, {
       title: generatedData.title,
       ingredients: generatedData.ingredients as unknown as Json,
       instructions: generatedData.instructions as unknown as Json,
@@ -70,10 +69,10 @@ export const POST: APIRoute = async (context) => {
     });
 
     // 7. Log Success
-    await recipeService.logGenerationAttempt(user.id, true);
+    await recipeService.logGenerationAttempt(userId, true);
 
     // 8. Get Updated Usage
-    const usage = await recipeService.getDailyUsage(user.id);
+    const usage = await recipeService.getDailyUsage(userId);
 
     // 9. Return Response
     const responseBody: GenerateRecipeResponse = {
@@ -92,12 +91,19 @@ export const POST: APIRoute = async (context) => {
     });
   } catch (error: unknown) {
     // Error Handling
-    console.error("Generate Recipe API Error:", error);
+    logger.error("Generate Recipe API Error:", error);
 
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
     // Log failure
-    await recipeService.logGenerationAttempt(user.id, false, errorMessage);
+    await recipeService.logGenerationAttempt(userId, false, errorMessage);
+
+    if (error instanceof OpenRouterServiceError) {
+      return new Response(JSON.stringify({ error: "Failed to generate recipe from AI provider" }), {
+        status: 502,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     if (errorMessage === "Daily generation limit reached") {
       return new Response(JSON.stringify({ error: "Daily generation limit reached" }), {
@@ -106,7 +112,7 @@ export const POST: APIRoute = async (context) => {
       });
     }
 
-    if (errorMessage.includes("OpenRouter") || errorMessage.includes("JSON")) {
+    if (errorMessage.includes("JSON") || errorMessage.includes("Invalid JSON structure")) {
       return new Response(JSON.stringify({ error: "Failed to generate recipe from AI provider" }), {
         status: 502, // Bad Gateway or 422 Unprocessable Entity
         headers: { "Content-Type": "application/json" },

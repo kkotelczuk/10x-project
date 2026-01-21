@@ -1,0 +1,10 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { RecipeGenView } from "@/components/recipe-gen/RecipeGenView";
+---
+
+<Layout title="Modyfikuj przepis">
+  <main class="container mx-auto py-10">
+    <RecipeGenView client:load />
+  </main>
+</Layout>

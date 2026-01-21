@@ -1,0 +1,16 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href?: string;
+  linkText?: string;
+}
+
+const { title, description, href = "/", linkText = "Go back" } = Astro.props;
+---
+
+<div class="rounded-xl border bg-card p-6">
+  <h1 class="text-xl font-semibold tracking-tight">{title}</h1>
+  <p class="mt-2 text-sm text-muted-foreground">{description}</p>
+  <a class="mt-4 inline-block text-sm underline underline-offset-4" href={href}>{linkText}</a>
+</div>

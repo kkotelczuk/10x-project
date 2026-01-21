@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { RecipeService } from "@/lib/services/recipe.service";
+import { logger } from "@/lib/logger";
 
 export const prerender = false;
 
@@ -24,9 +25,45 @@ export const GET: APIRoute = async ({ request, locals }) => {
     const rawId = url.searchParams.get("id");
 
     if (!rawId) {
-      return new Response(JSON.stringify({ error: "Missing 'id' parameter" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
+      const selectParam =
+        url.searchParams.get("select") ?? "id,title,diet_label,created_at,is_active,prep_time_minutes";
+      const orderParam = url.searchParams.get("order") ?? "created_at.desc";
+      const dietLabelParam = url.searchParams.get("diet_label");
+      const titleParam = url.searchParams.get("title");
+
+      const [orderField, orderDirection] = orderParam.split(".");
+      const ascending = orderDirection === "asc";
+
+      let query = locals.supabase.from("recipes").select(selectParam);
+
+      if (orderField) {
+        query = query.order(orderField, { ascending });
+      }
+
+      if (dietLabelParam) {
+        const value = dietLabelParam.startsWith("eq.") ? dietLabelParam.slice(3) : dietLabelParam;
+        query = query.eq("diet_label", value);
+      }
+
+      if (titleParam) {
+        const value = titleParam.startsWith("ilike.") ? titleParam.slice(6) : titleParam;
+        query = query.ilike("title", value);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        return new Response(JSON.stringify({ error: "Failed to fetch recipes" }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify(data ?? []), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "private, no-store",
+        },
       });
     }
 
@@ -64,7 +101,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching recipe details:", error);
+    logger.error("Error fetching recipe details:", error);
 
     // 7. Handle System Errors
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
@@ -140,7 +177,7 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
       },
     });
   } catch (error) {
-    console.error("Error deleting recipe:", error);
+    logger.error("Error deleting recipe:", error);
 
     // 7. Handle System Errors
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {

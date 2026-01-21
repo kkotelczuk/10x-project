@@ -40,3 +40,5 @@ for insert with check (profile_id = '5f53673d-626f-4f11-8638-b1e65407fdf7');
 create policy "Mock: Delete Dislikes" on public.profile_dislikes
 for delete using (profile_id = '5f53673d-626f-4f11-8638-b1e65407fdf7');
 
+
+

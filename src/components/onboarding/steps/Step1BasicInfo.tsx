@@ -9,13 +9,14 @@ interface Step1BasicInfoProps {
   acceptTerms: boolean;
   onUpdate: (data: { display_name?: string; accept_terms?: boolean }) => void;
   errors?: { display_name?: string; accept_terms?: string };
+  showTerms?: boolean;
 }
 
-export function Step1BasicInfo({ displayName, acceptTerms, onUpdate, errors }: Step1BasicInfoProps) {
+export function Step1BasicInfo({ displayName, acceptTerms, onUpdate, errors, showTerms = true }: Step1BasicInfoProps) {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <CardHeader className="px-0 pt-0">
-        <CardTitle>Let's get started</CardTitle>
+        <CardTitle>Let&apos;s get started</CardTitle>
         <CardDescription>Please provide your details to personalize your experience.</CardDescription>
       </CardHeader>
 
@@ -32,21 +33,25 @@ export function Step1BasicInfo({ displayName, acceptTerms, onUpdate, errors }: S
           {errors?.display_name && <p className="text-sm text-red-500">{errors.display_name}</p>}
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="terms"
-            checked={acceptTerms}
-            onCheckedChange={(checked) => onUpdate({ accept_terms: checked === true })}
-            className={errors?.accept_terms ? "border-red-500" : ""}
-          />
-          <Label
-            htmlFor="terms"
-            className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${errors?.accept_terms ? "text-red-500" : ""}`}
-          >
-            I accept the terms and conditions
-          </Label>
-        </div>
-        {errors?.accept_terms && <p className="text-sm text-red-500">{errors.accept_terms}</p>}
+        {showTerms ? (
+          <>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="terms"
+                checked={acceptTerms}
+                onCheckedChange={(checked) => onUpdate({ accept_terms: checked === true })}
+                className={errors?.accept_terms ? "border-red-500" : ""}
+              />
+              <Label
+                htmlFor="terms"
+                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${errors?.accept_terms ? "text-red-500" : ""}`}
+              >
+                I accept the terms and conditions
+              </Label>
+            </div>
+            {errors?.accept_terms && <p className="text-sm text-red-500">{errors.accept_terms}</p>}
+          </>
+        ) : null}
       </div>
     </div>
   );

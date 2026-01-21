@@ -2,6 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { IngredientService } from "@/lib/services/ingredient.service";
+import { logger } from "@/lib/logger";
 
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
@@ -30,7 +31,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       },
     });
   } catch (error) {
-    console.error("Error in GET /rest/v1/ingredients:", error);
+    logger.error("Error in GET /rest/v1/ingredients:", error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
       headers: {

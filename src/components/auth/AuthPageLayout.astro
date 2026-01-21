@@ -1,0 +1,25 @@
+---
+import Layout from "@/layouts/Layout.astro";
+
+interface Props {
+  title: string;
+  subtitle?: string;
+}
+
+const { title, subtitle } = Astro.props;
+---
+
+<Layout title={title} showNavigation={false}>
+  <main class="min-h-screen bg-background px-4 py-12 sm:py-16" role="main">
+    <div class="mx-auto flex w-full max-w-md flex-col gap-8">
+      <div class="text-center">
+        <a href="/" class="text-lg font-semibold text-foreground"> 10xDiet </a>
+        <h1 class="mt-4 text-2xl font-semibold text-foreground">{title}</h1>
+        {subtitle ? <p class="mt-2 text-sm text-muted-foreground">{subtitle}</p> : null}
+      </div>
+      <div class="w-full">
+        <slot />
+      </div>
+    </div>
+  </main>
+</Layout>

@@ -1,4 +1,4 @@
-const commonFoodAllergens = [
+export const commonFoodAllergens = [
   "Mleko krowie",
   "Jaja kurze",
   "Ryby",

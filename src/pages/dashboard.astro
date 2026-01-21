@@ -1,0 +1,14 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { DashboardView } from "@/components/dashboard/DashboardView";
+
+export const prerender = false;
+---
+
+<Layout title="Dashboard">
+  <main class="min-h-screen">
+    <div class="container mx-auto px-4 py-8 md:py-10">
+      <DashboardView client:load />
+    </div>
+  </main>
+</Layout>
