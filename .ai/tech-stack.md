@@ -18,8 +18,8 @@
 - **Component Library**: shadcn/ui
   - **Icon Set**: Lucide React
 - **Conventions**:
-  - Mobile-first responsive design
-  - Dark mode support (system/user toggle)
+  - **Mobile-first responsive design**
+  - **Dark mode support** (system/user toggle)
 
 ## 3. Backend & Services (BaaS)
 
@@ -47,7 +47,18 @@
   - Build & Push Docker image
   - Deploy to DigitalOcean
 
-## 6. Coding Standards for AI
+## 6. Testing
+
+- **Unit & Integration**: Vitest
+  - **Component Testing**: React Testing Library
+  - **Scope**: Services, Hooks, Utilities, Component logic
+- **End-to-End (E2E)**: Playwright
+  - **Scope**: Critical user flows (Auth, Onboarding, Recipe Generation)
+- **Quality Assurance**:
+  - **AI Verification**: Structured JSON validation + Manual review
+  - **Lighthouse**: Performance and Accessibility checks
+
+## 7. Coding Standards for AI
 
 When generating code, adhere to the following:
 

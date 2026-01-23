@@ -8,6 +8,7 @@
 - [Tech Stack](#tech-stack)
 - [Getting Started Locally](#getting-started-locally)
 - [Available Scripts](#available-scripts)
+- [Testing Strategy](#testing-strategy)
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
 - [License](#license)
@@ -37,6 +38,8 @@ This project is built using modern web technologies, focusing on performance and
 | **Backend / BaaS** | **Supabase**       | PostgreSQL database, Authentication, and Row Level Security (RLS).     |
 | **AI Integration** | **OpenRouter.ai**  | Server-side LLM integration via Astro Endpoints.                       |
 | **Infrastructure** | **Docker**         | Containerized deployment targeting DigitalOcean.                       |
+| **Testing**        | **Vitest**         | Unit and Integration testing for logic and components.                 |
+| **E2E Testing**    | **Playwright**     | End-to-End testing for critical user flows (Auth, Onboarding, Gen).    |
 
 ## Getting Started Locally
 
@@ -87,6 +90,24 @@ These scripts are defined in `package.json` for development and maintenance.
 | `lint`     | `eslint .`           | Runs ESLint to check for code quality issues. |
 | `lint:fix` | `eslint . --fix`     | Automatically fixes fixable linting errors.   |
 | `format`   | `prettier --write .` | Formats code using Prettier.                  |
+
+## Testing Strategy
+
+We employ a comprehensive testing strategy to ensure reliability and safety.
+
+### Unit & Integration Tests (Vitest)
+- **Unit Tests**: Focus on isolated business logic in `src/lib/services` (e.g., allergen filtering, diet matching) and custom hooks.
+- **Integration Tests**: Verify the interaction between Astro API endpoints and Supabase, as well as React form flows.
+
+### End-to-End Tests (Playwright)
+- Cover critical user journeys:
+  - User Registration & Onboarding.
+  - Recipe Generation flow.
+  - Authentication handling.
+
+### AI Verification
+- Automated checks for JSON structure validity from AI responses.
+- Manual review processes for recipe quality and safety.
 
 ## Project Scope
 
