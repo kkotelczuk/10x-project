@@ -121,6 +121,14 @@ export class RecipeService {
    * @returns Object containing remaining and limit
    */
   async getDailyUsage(userId: string): Promise<{ remaining: number; limit: number }> {
+    // In development, return unlimited usage
+    if (!import.meta.env.PROD) {
+      return {
+        remaining: 999,
+        limit: 999,
+      };
+    }
+
     const limit = 3;
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
@@ -182,7 +190,7 @@ export class RecipeService {
         },
         {
           role: "user",
-          content: `Generate a recipe for: ${originalText}`,
+          content: `Modify the recipe based on the user's preferences and recipe request: ${originalText}`,
         },
       ],
     });

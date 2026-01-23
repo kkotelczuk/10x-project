@@ -41,7 +41,7 @@ export function Step4Dislikes({ dislikeIds, onUpdate }: Step4DislikesProps) {
 
   useEffect(() => {
     if (dislikeIds.length === 0) {
-      setSelectedIngredients([]);
+      setSelectedIngredients((prev) => (prev.length === 0 ? prev : []));
       return;
     }
 

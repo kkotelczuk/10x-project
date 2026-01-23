@@ -1,21 +1,19 @@
 import type { APIRoute } from "astro";
 import { RecipeService } from "@/lib/services/recipe.service";
-import { DEFAULT_USER_ID } from "@/db/supabase.client";
 import { logger } from "@/lib/logger";
 
 export const prerender = false;
 
 export const GET: APIRoute = async ({ locals }) => {
-  // 1. Auth Verification (Mocked)
-  // const user = locals.user;
-  const userId = DEFAULT_USER_ID;
+  const user = locals.user;
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
-  // if (!user) {
-  //   return new Response(JSON.stringify({ error: "Unauthorized: Invalid or missing token" }), {
-  //     status: 401,
-  //     headers: { "Content-Type": "application/json" },
-  //   });
-  // }
+  const userId = user.id;
 
   try {
     const recipeService = new RecipeService(locals.supabase);

@@ -47,7 +47,10 @@ export const POST: APIRoute = async (context) => {
 
     // 3. Check Daily Limit
     // This throws if limit reached
-    await recipeService.checkDailyLimit(userId);
+    // Skip limit check in development
+    if (import.meta.env.PROD) {
+      await recipeService.checkDailyLimit(userId);
+    }
 
     // 4. Fetch Profile for Personalization
     const profile = await profileService.getProfile(userId);

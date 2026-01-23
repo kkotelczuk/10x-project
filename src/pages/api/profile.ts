@@ -1,23 +1,21 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { ProfileService } from "@/lib/services/profile.service";
-import { DEFAULT_USER_ID } from "@/db/supabase.client";
 import type { UpsertProfileCommand } from "@/types";
 import { logger } from "@/lib/logger";
 
 export const prerender = false;
 
 export const GET: APIRoute = async ({ locals }) => {
-  // 1. Auth Verification (Mocked)
-  // const user = locals.user;
-  const userId = DEFAULT_USER_ID;
+  const user = locals.user;
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
-  // if (!user) {
-  //   return new Response(JSON.stringify({ error: "Unauthorized: Invalid or missing token" }), {
-  //     status: 401,
-  //     headers: { "Content-Type": "application/json" },
-  //   });
-  // }
+  const userId = user.id;
 
   // 2. Execute Logic
   const service = new ProfileService(locals.supabase);
@@ -54,17 +52,15 @@ const upsertProfileSchema = z.object({
 });
 
 export const PUT: APIRoute = async ({ request, locals }) => {
-  // 1. Auth Verification (Mocked)
-  // Middleware handles token verification and sets locals.user
-  // const user = locals.user;
-  const userId = DEFAULT_USER_ID;
+  const user = locals.user;
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
-  // if (!user) {
-  //   return new Response(JSON.stringify({ error: "Unauthorized: Invalid or missing token" }), {
-  //     status: 401,
-  //     headers: { "Content-Type": "application/json" },
-  //   });
-  // }
+  const userId = user.id;
 
   // 2. Parse Body
   let body;

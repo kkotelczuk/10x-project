@@ -1,6 +1,23 @@
 ---
 import AuthPageLayout from "@/components/auth/AuthPageLayout.astro";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { ProfileService } from "@/lib/services/profile.service";
+
+export const prerender = false;
+
+const { user, supabase } = Astro.locals;
+if (user) {
+  try {
+    const profileService = new ProfileService(supabase);
+    const profile = await profileService.getProfile(user.id);
+    if (!profile || !profile.diet_id) {
+      return Astro.redirect("/onboarding");
+    }
+  } catch {
+    return Astro.redirect("/dashboard");
+  }
+  return Astro.redirect("/dashboard");
+}
 ---
 
 <AuthPageLayout title="Zaloguj się" subtitle="Wróć do swoich przepisów w kilka sekund.">

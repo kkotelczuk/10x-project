@@ -15,7 +15,7 @@ import { Step2DietSelection } from "./steps/Step2DietSelection";
 import { Step3Allergens } from "./steps/Step3Allergens";
 import { Step4Dislikes } from "./steps/Step4Dislikes";
 import { toast } from "sonner";
-import { setMockUser } from "@/components/hooks/authStorage";
+import { emitAuthChange } from "@/components/hooks/authStorage";
 import { logger } from "@/lib/logger";
 
 interface OnboardingFormData {
@@ -163,13 +163,13 @@ export default function OnboardingWizard({
       const profile = (await response.json()) as ProfileDTO;
       toast.success("Profile updated successfully!");
       if (typeof window !== "undefined") {
-        setMockUser({ displayName: profile.display_name ?? "Użytkownik" }, true);
+        emitAuthChange();
       }
       onComplete?.(profile);
       if (onComplete) return;
 
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = "/dashboard";
       }, 1500);
     } catch (error) {
       logger.error("Error updating profile:", error);

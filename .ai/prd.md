@@ -100,13 +100,12 @@ Kryteria akceptacji:
 3. System wymaga akceptacji regulaminu i polityki prywatności.
 
 ID: US-002
-Tytuł: Logowanie przez Google
-Opis: Jako użytkownik chcę zalogować się kontem Google, aby przyspieszyć proces dostępu.
-Kryteria akceptacji:
+Tytuł: Logowanie przez email
+Opis: Jako użytkownik chcę zalogować się podając email i haslo. 
 
-1. Przycisk "Zaloguj z Google" jest dostępny na ekranie logowania/rejestracji.
-2. Po autoryzacji Google, jeśli konto nie istnieje, jest tworzone i następuje onboarding.
-3. Jeśli konto istnieje, następuje przekierowanie do Dashboardu.
+1. Przycisk "Zaloguj" jest dostępny na ekranie logowania/rejestracji.
+2. Po autoryzacji emailem i haslem uzytkownik jest przekierowywany do dashoardu.
+3. Jesli serwer zwroci blad logowania, uzytkownik powienien miec odpowiedni komunikat.
 
 ID: US-003
 Tytuł: Odzyskiwanie hasła
@@ -115,6 +114,20 @@ Kryteria akceptacji:
 
 1. Formularz "Zapomniałem hasła" wysyła link resetujący na email.
 2. Kliknięcie w link pozwala ustawić nowe hasło.
+
+ID: US-004: Bezpieczny dostęp i uwierzytelnianie
+
+- Tytuł: Bezpieczny dostęp
+- Opis: Jako użytkownik chcę mieć możliwość rejestracji i logowania się do systemu w sposób zapewniający bezpieczeństwo moich danych.
+- Kryteria akceptacji:
+  - Logowanie i rejestracja odbywają się na dedykowanych stronach.
+  - Logowanie wymaga podania adresu email i hasła.
+  - Rejestracja wymaga podania adresu email, hasła i potwierdzenia hasła.
+  - Użytkownik MOŻE korzystać z serisu bez logowania się do systemu (US-002 )
+  - Użytkownik może logować się do systemu poprzez przycisk w prawym górnym rogu.
+  - Użytkownik może się wylogować z systemu poprzez przycisk w prawym górnym rogu w głównym @Layout.astro.
+  - Nie korzystamy z zewnętrznych serwisów logowania (np. Google, GitHub).
+  - Odzyskiwanie hasła powinno być możliwe.
 
 ### Onboarding i Profil
 

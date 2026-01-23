@@ -5,12 +5,10 @@ import type { AuthFormErrors, AuthFormMode, AuthFormState, ResetPasswordState } 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { AuthLinks } from "@/components/auth/AuthLinks";
 import { ResetPasswordDialog } from "@/components/auth/ResetPasswordDialog";
 import { useAuthActions } from "@/components/hooks/useAuthActions";
 import { usePasswordStrength } from "@/components/hooks/usePasswordStrength";
-import { isMockProfileComplete } from "@/components/hooks/authStorage";
 
 interface AuthCardProps {
   mode: AuthFormMode;
@@ -33,7 +31,7 @@ const buildErrorMessage = (message: string, mode: AuthFormMode) => {
 };
 
 export function AuthCard({ mode }: AuthCardProps) {
-  const { signInWithPassword, signUp, signInWithGoogle, resetPasswordForEmail } = useAuthActions();
+  const { signInWithPassword, signUp, resetPasswordForEmail } = useAuthActions();
   const [state, setState] = React.useState<AuthFormState>({
     email: "",
     password: "",
@@ -41,7 +39,6 @@ export function AuthCard({ mode }: AuthCardProps) {
   });
   const [errors, setErrors] = React.useState<AuthFormErrors>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = React.useState(false);
   const [resetOpen, setResetOpen] = React.useState(false);
   const [resetState, setResetState] = React.useState<ResetPasswordState>({
     email: "",
@@ -111,11 +108,26 @@ export function AuthCard({ mode }: AuthCardProps) {
       if (mode === "login") {
         await signInWithPassword(state.email.trim(), state.password);
         toast.success("Zalogowano pomyślnie.");
-        window.location.assign("/dashboard");
+        let needsOnboarding = false;
+        try {
+          const profileResponse = await fetch("/api/profile", {
+            method: "GET",
+            credentials: "same-origin",
+          });
+          if (profileResponse.status === 404) {
+            needsOnboarding = true;
+          } else if (profileResponse.ok) {
+            const profile = (await profileResponse.json()) as { diet_id?: string | null };
+            needsOnboarding = !profile.diet_id;
+          }
+        } catch {
+          needsOnboarding = false;
+        }
+        window.location.assign(needsOnboarding ? "/onboarding" : "/dashboard");
         return;
       }
 
-      await signUp(state.email.trim(), state.password);
+      await signUp(state.email.trim(), state.password, state.termsAccepted);
       toast.success("Konto utworzone. Dokończ onboarding.");
       window.location.assign("/onboarding");
     } catch (error) {
@@ -129,31 +141,6 @@ export function AuthCard({ mode }: AuthCardProps) {
       setIsSubmitting(false);
     }
   }, [mode, signInWithPassword, signUp, state, validateForm]);
-
-  const handleGoogleAuth = React.useCallback(async () => {
-    setIsGoogleLoading(true);
-    try {
-      await signInWithGoogle();
-      if (isMockProfileComplete()) {
-        window.location.assign("/dashboard");
-        return;
-      }
-      const response = await fetch("/api/profile", { method: "GET" });
-      if (response.status === 404) {
-        window.location.assign("/onboarding");
-        return;
-      }
-      window.location.assign("/dashboard");
-    } catch (error) {
-      const message =
-        error && typeof error === "object" && "message" in error
-          ? buildErrorMessage(String(error.message), mode)
-          : "Logowanie przerwane.";
-      toast.error(message);
-    } finally {
-      setIsGoogleLoading(false);
-    }
-  }, [mode, signInWithGoogle]);
 
   const handleResetSubmit = React.useCallback(async () => {
     setResetError(null);
@@ -224,18 +211,6 @@ export function AuthCard({ mode }: AuthCardProps) {
             onChange={handleChange}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
-          />
-
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            lub
-            <span className="h-px flex-1 bg-border" />
-          </div>
-
-          <GoogleAuthButton
-            onClick={handleGoogleAuth}
-            isLoading={isGoogleLoading}
-            label={mode === "login" ? "Zaloguj z Google" : "Zarejestruj z Google"}
           />
 
           <AuthLinks mode={mode} onResetPassword={handleResetOpen} />

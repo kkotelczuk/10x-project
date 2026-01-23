@@ -1,5 +1,5 @@
 import type { AuthError } from "@/types";
-import { clearMockUser, setMockUser } from "@/components/hooks/authStorage";
+import { emitAuthChange } from "@/components/hooks/authStorage";
 
 const mapAuthError = (error: { message: string; status?: number; code?: string }): AuthError => {
   return {
@@ -8,11 +8,25 @@ const mapAuthError = (error: { message: string; status?: number; code?: string }
   };
 };
 
-const delay = (ms = 600) => new Promise((resolve) => setTimeout(resolve, ms));
+const requestJson = async <T>(input: RequestInfo | URL, init: RequestInit): Promise<T> => {
+  const response = await fetch(input, {
+    credentials: "same-origin",
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(init.headers ?? {}),
+    },
+  });
 
-const buildDisplayName = (email: string) => {
-  const [name] = email.split("@");
-  return name?.trim() || "Użytkownik";
+  const contentType = response.headers.get("Content-Type") ?? "";
+  const data = contentType.includes("application/json") ? await response.json() : null;
+
+  if (!response.ok) {
+    const message = data && typeof data === "object" && "error" in data ? String(data.error) : "Błąd autoryzacji.";
+    throw mapAuthError({ message, status: response.status });
+  }
+
+  return data as T;
 };
 
 export function useAuthActions() {
@@ -20,46 +34,55 @@ export function useAuthActions() {
     if (!email || !password) {
       throw mapAuthError({ message: "Brak danych logowania." });
     }
-    await delay();
-    setMockUser({ displayName: buildDisplayName(email) });
+    await requestJson("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+    emitAuthChange();
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, acceptTerms = false) => {
     if (!email || !password) {
       throw mapAuthError({ message: "Brak danych rejestracji." });
     }
-    await delay();
-    setMockUser({ displayName: buildDisplayName(email) }, false);
-  };
-
-  const signInWithGoogle = async () => {
-    await delay();
-    setMockUser({ displayName: "Google User" });
+    await requestJson("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ email, password, acceptTerms }),
+    });
+    emitAuthChange();
   };
 
   const resetPasswordForEmail = async (email: string) => {
     if (!email) {
       throw mapAuthError({ message: "Email jest wymagany." });
     }
-    await delay();
+    await requestJson("/api/auth/reset", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
   };
 
   const updatePassword = async (password: string) => {
     if (!password) {
       throw mapAuthError({ message: "Hasło jest wymagane." });
     }
-    await delay();
+    await requestJson("/api/auth/update-password", {
+      method: "POST",
+      body: JSON.stringify({ password }),
+    });
   };
 
   const signOut = async () => {
-    await delay(300);
-    clearMockUser();
+    await requestJson("/api/auth/logout", {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+    emitAuthChange();
   };
 
   return {
     signInWithPassword,
     signUp,
-    signInWithGoogle,
     resetPasswordForEmail,
     updatePassword,
     signOut,

@@ -8,6 +8,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
   try {
     const url = new URL(request.url);
     const query = url.searchParams.get("query");
+    const idParam = url.searchParams.get("id");
 
     // Parse limit if provided, default to 50, cap at 100 for safety
     const limitParam = url.searchParams.get("limit");
@@ -17,6 +18,43 @@ export const GET: APIRoute = async ({ request, locals }) => {
       if (!isNaN(parsed) && parsed > 0) {
         limit = Math.min(parsed, 100);
       }
+    }
+
+    if (idParam) {
+      const ids: string[] = [];
+      if (idParam.startsWith("in.(") && idParam.endsWith(")")) {
+        const inside = idParam.slice(3, -1);
+        ids.push(...inside.split(",").map((id) => id.trim()).filter(Boolean));
+      } else {
+        ids.push(idParam);
+      }
+
+      if (ids.length === 0) {
+        return new Response(JSON.stringify([]), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store",
+          },
+        });
+      }
+
+      const { data, error } = await locals.supabase
+        .from("ingredients")
+        .select("id, name, category, variants")
+        .in("id", ids);
+
+      if (error) {
+        throw error;
+      }
+
+      return new Response(JSON.stringify(data ?? []), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store",
+        },
+      });
     }
 
     const service = new IngredientService(locals.supabase);
