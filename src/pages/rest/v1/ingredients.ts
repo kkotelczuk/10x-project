@@ -24,7 +24,12 @@ export const GET: APIRoute = async ({ request, locals }) => {
       const ids: string[] = [];
       if (idParam.startsWith("in.(") && idParam.endsWith(")")) {
         const inside = idParam.slice(3, -1);
-        ids.push(...inside.split(",").map((id) => id.trim()).filter(Boolean));
+        ids.push(
+          ...inside
+            .split(",")
+            .map((id) => id.trim())
+            .filter(Boolean)
+        );
       } else {
         ids.push(idParam);
       }

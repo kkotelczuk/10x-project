@@ -87,10 +87,7 @@ export function RecipeGenView() {
         return;
       }
 
-      const data = (await response.json().catch(() => null)) as
-        | GenerateRecipeResponse
-        | { error?: string }
-        | null;
+      const data = (await response.json().catch(() => null)) as GenerateRecipeResponse | { error?: string } | null;
 
       if (!response.ok) {
         if (response.status === 429) {
