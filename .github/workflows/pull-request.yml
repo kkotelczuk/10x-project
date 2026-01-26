@@ -73,7 +73,6 @@ jobs:
               "",
               "- Lint: passed",
               "- Unit tests: passed",
-              "- E2E tests: passed",
             ].join("\n");
             await github.rest.issues.createComment({
               owner,
