@@ -1,0 +1,105 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    env:
+      NODE_VERSION: 22.14.0
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node and install deps
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Lint
+        run: npm run lint
+
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    needs: [lint]
+    env:
+      NODE_VERSION: 22.14.0
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node and install deps
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Run unit tests with coverage
+        run: npm run test:unit -- --coverage
+      - name: Upload unit coverage
+        uses: actions/upload-artifact@v6
+        with:
+          name: unit-coverage
+          path: coverage
+          if-no-files-found: error
+
+  e2e-test:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    needs: [lint]
+    environment: integration
+    env:
+      NODE_VERSION: 22.14.0
+      CI: true
+      NODE_ENV: integration
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node and install deps
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Run E2E tests
+        run: npm run test:e2e -- --reporter=github --output=playwright-report
+      - name: Upload E2E report
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-coverage
+          path: playwright-report
+          if-no-files-found: error
+
+  status-comment:
+    name: Status comment
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test, e2e-test]
+    if: ${{ success() }}
+    steps:
+      - name: Comment on PR status
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const body = [
+              "✅ CI passed for this pull request.",
+              "",
+              "- Lint: passed",
+              "- Unit tests: passed",
+              "- E2E tests: passed",
+            ].join("\n");
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body,
+            });
