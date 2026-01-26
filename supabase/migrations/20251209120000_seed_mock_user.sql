@@ -36,6 +36,10 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 -- Seed some test data
+INSERT INTO public.allergens (id, name)
+VALUES ('orzeszki-ziemne', 'Orzeszki ziemne (arachidowe)')
+ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO public.profile_allergens (profile_id, allergen_id)
 VALUES ('5f53673d-626f-4f11-8638-b1e65407fdf6', 'orzeszki-ziemne')
 ON CONFLICT DO NOTHING;
