@@ -1,6 +1,6 @@
 # HealthyMeal
 
-**HealthyMeal** is an AI-powered MVP web application designed to solve the problem of adapting cooking recipes to individual dietary needs. It allows users to input any recipe and uses a Large Language Model (LLM) to modify ingredients and instructions based on the user's dietary profile (e.g., allergies, Keto/Vegan diets, or specific product dislikes).
+**HealthyMeal** is an AI-powered MVP web application designed to solve the problem of adapting cooking recipes to individual dietary needs. It allows users to input any recipe and uses a Large Language Model (LLM) to modify ingredients and instructions based on the user's dietary profile (e.g., allergies, Keto/Vegan diets, or specific product dislikes). Test PR wrokflow
 
 ## Table of Contents
 
